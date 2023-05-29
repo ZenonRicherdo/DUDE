@@ -1,0 +1,52 @@
+local VirtualInputManager = game:GetService("VirtualInputManager")
+game:GetService("Workspace").Game.Map.InteractableNPCS["Domen Eiko"].HumanoidRootPart.ProximityPrompt.HoldDuration = 0
+
+getgenv().running = true
+getgenv().AC = true
+
+-- List of hostage names to target
+local targetHostages = {"Hostage1","Hostage2","Hostage3", "Hostage4", "Hostage5", "Hostage6", "Hostage7", "Hostage8", "Hostage9", "Hostage10"}
+
+function pressE()
+    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.E, false, nil)
+    wait() -- adjust this value to change the delay between key presses
+end
+
+function releaseE()
+    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.E, false, nil)
+    wait() -- adjust this value to change the duration of the key press
+end
+
+while getgenv().running do
+    local player = game.workspace.Game.Characters.StopitIchigo.HumanoidRootPart
+    local mobs1 = game.workspace.Game.Characters.hostages:GetChildren()  
+    local domenEikoNPC = game:GetService("Workspace").Game.Map.InteractableNPCS["Domen Eiko"]
+
+    local function interactWithHostage(hostage)
+        hostage.HumanoidRootPart.unhostage.MaxActivationDistance = 100
+        player.CFrame = hostage.HumanoidRootPart.CFrame
+
+        -- Same as before 
+    end
+
+    -- Teleport to Domen Eiko
+    player.CFrame = domenEikoNPC.HumanoidRootPart.CFrame
+    wait(0.5) -- Wait for 1 second to hold "E" key
+
+    -- Interact with targeted hostages
+    for _, mob in pairs(mobs1) do
+        if mob:IsA("Model") and mob:FindFirstChild("HumanoidRootPart") then
+            if mob.HumanoidRootPart.Parent and table.find(targetHostages, mob.Name) then
+                interactWithHostage(mob)
+            end    
+        end 
+        wait(1) -- Wait for a short time before interacting with the next hostage
+    end
+end
+
+-- Auto-clicker to interact with the NPC
+while getgenv().AC == true do
+    pressE()
+    releaseE()
+    wait()
+end
